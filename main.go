@@ -1,19 +1,26 @@
 package main
 
 import (
-  "fmt"
+  // "fmt"
   "net/http"
-  "github.com/gorilla/mux"
+  "text/template"
 )
 
+type Person struct {
+	Name string
+}
+
 func main() {
-
-  r := mux.NewRouter()
-
-  r.HandleFunc("/", handler).Methods("GET")
-  http.ListenAndServe(":5656", r)
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":5656", nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "Hello World!")
+
+	t, _ := template.ParseFiles("templates/index.tmpl")
+	err := t.Execute(w, "Hello World!")
+
+	if err != nil {
+		panic(err)
+	}
 }

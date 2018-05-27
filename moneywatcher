@@ -1,0 +1,32 @@
+#!/bin/bash
+
+export GOROOT=$HOME/local/go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+
+case "$1" in 
+start)
+   go run /home/gogs/go/src/github.com/jonashellmann/moneywatcher/main.go &
+   echo $!>/var/run/moneywatcher.pid
+   ;;
+stop)
+   kill `cat /var/run/moneywatcher.pid`
+   rm /var/run/moneywatcher.pid
+   ;;
+restart)
+   $0 stop
+   $0 start
+   ;;
+status)
+   if [ -e /var/run/hit.pid ]; then
+      echo moneywatcher (go) is running, pid=`cat /var/run/moneywatcher.pid`
+   else
+      echo moneywatcher (go) is NOT running
+      exit 1
+   fi
+   ;;
+*)
+   echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0 
