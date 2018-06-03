@@ -16,6 +16,9 @@ func newRouter() *mux.Router {
 	r.PathPrefix("/a/").Handler(staticFileHandler).Methods("GET")
 
 	r.HandleFunc("/region", getRegionHandler).Methods("GET")
+	r.HandleFunc("/category", getCategoryHandler).Methods("GET")
+	r.HandleFunc("/recipient", getRecipientHandler).Methods("GET")
+	r.HandleFunc("/expense", getExpenseHandler).Methods("GET")
 	return r
 }
 
@@ -33,7 +36,7 @@ func createDatabase() {
 	        panic(err1)
 	}
 
-	connString := configuration.db_user + ":" + configuration.db_user_password + "@/" + configuration.db_database_name
+	connString := configuration.User + ":" + configuration.Password + "@/" + configuration.Database
 	db, err := sql.Open("mysql", connString)
 
 	if err != nil {
