@@ -98,17 +98,17 @@ func (store *dbStore) GetExpenses() ([]*Expense, error) {
 }
 
 func (store *dbStore) CreateRegion(region *Region) error {
-	_, err := store.db.Query("INSERT INTO region(description) VALUES ($1)", region.Description)
+	_, err := store.db.Query("INSERT INTO region (description) VALUES (?)", region.Description)
 	return err
 }
 
 func (store *dbStore) CreateCategory(category *Category) error {
-	_, err := store.db.Query("INSERT INTO category(description) VALUES ($1)", category.Description)
+	_, err := store.db.Query("INSERT INTO category (description) VALUES (?)", category.Description)
 	return err
 }
 
 func (store *dbStore) CreateRecipient(recipient *Recipient) error {
-	_, err := store.db.Query("INSERT INTO recipient(name) VALUES ($1)", recipient.Name)
+	_, err := store.db.Query("INSERT INTO recipient (name) VALUES (?)", recipient.Name)
 	return err
 }
 

@@ -39,7 +39,9 @@ func createRegionHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = store.CreateRegion(&region)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	http.Redirect(w, r, "/a/", http.StatusFound)
