@@ -23,3 +23,24 @@ func getRegionHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(regionListBytes)
 }
+
+func createRegionHandler(w http.ResponseWriter, r *http.Request) {
+	region := Region{}
+
+	err := r.ParseForm()
+
+	if err!= nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	region.Description = r.Form.Get("description")
+
+	err = store.CreateRegion(&region)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	http.Redirect(w, r, "/a/", http.StatusFound)
+}

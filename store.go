@@ -10,6 +10,10 @@ type Store interface {
 	GetCategorys() ([]*Category, error)
 	GetExpenses() ([]*Expense, error)
 	GetRecipients() ([]*Recipient, error)
+
+	CreateRegion(region *Region) error
+	CreateCategory(category *Category) error
+	CreateRecipient(recipient *Recipient) error
 }
 
 type dbStore struct {
@@ -17,10 +21,10 @@ type dbStore struct {
 }
 
 func (store *dbStore) CreateStorage() error {
-	_, err := store.db.Query("CREATE TABLE IF NOT EXISTS region (id int(5) PRIMARY KEY NOT NULL, description VARCHAR(256)) ENGINE=InnoDB;")
-	_, err =store.db.Query("CREATE TABLE IF NOT EXISTS category (id int(5) PRIMARY KEY NOT NULL, description VARCHAR(256)) ENGINE=InnoDB;")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS recipient (id int(5) PRIMARY KEY NOT NULL, name VARCHAR(256)) ENGINE=InnoDB;")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id)) ENGINE=InnoDB;")
+	_, err := store.db.Query("CREATE TABLE IF NOT EXISTS region (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL) ENGINE=InnoDB;")
+	_, err =store.db.Query("CREATE TABLE IF NOT EXISTS category (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL) ENGINE=InnoDB;")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS recipient (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(256) NOT NULL) ENGINE=InnoDB;")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id)) ENGINE=InnoDB;")
 
 	return err
 }
@@ -91,6 +95,21 @@ func (store *dbStore) GetExpenses() ([]*Expense, error) {
                 expenses = append(expenses, expense)
         }
         return expenses, nil
+}
+
+func (store *dbStore) CreateRegion(region *Region) error {
+	_, err := store.db.Query("INSERT INTO region(description) VALUES ($1)", region.Description)
+	return err
+}
+
+func (store *dbStore) CreateCategory(category *Category) error {
+	_, err := store.db.Query("INSERT INTO category(description) VALUES ($1)", category.Description)
+	return err
+}
+
+func (store *dbStore) CreateRecipient(recipient *Recipient) error {
+	_, err := store.db.Query("INSERT INTO recipient(name) VALUES ($1)", recipient.Name)
+	return err
 }
 
 var store Store

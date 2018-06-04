@@ -18,6 +18,11 @@ func newRouter() *mux.Router {
 	r.HandleFunc("/category", getCategoryHandler).Methods("GET")
 	r.HandleFunc("/recipient", getRecipientHandler).Methods("GET")
 	r.HandleFunc("/expense", getExpenseHandler).Methods("GET")
+
+	r.HandleFunc("/region", createRegionHandler).Methods("POST")
+	r.HandleFunc("/category", createCategoryHandler).Methods("POST")
+	r.HandleFunc("/recipient", createRecipientHandler).Methods("POST")
+
 	return r
 }
 

@@ -23,3 +23,24 @@ func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
 
         w.Write(recipientListBytes)
 }
+
+func createRecipientHandler(w http.ResponseWriter, r *http.Request) {
+        recipient := Recipient{}
+
+        err := r.ParseForm()
+
+        if err!= nil {
+                fmt.Println(fmt.Errorf("Error: %v", err))
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+        }
+
+        recipient.Name = r.Form.Get("name")
+
+        err = store.CreateRecipient(&recipient)
+        if err != nil {
+                fmt.Println(err)
+        }
+
+        http.Redirect(w, r, "/a/", http.StatusFound)
+}

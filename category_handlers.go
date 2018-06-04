@@ -23,3 +23,24 @@ func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
 
         w.Write(categoryListBytes)
 }
+
+func createCategoryHandler(w http.ResponseWriter, r *http.Request) {
+        category := Category{}
+
+        err := r.ParseForm()
+
+        if err!= nil {
+                fmt.Println(fmt.Errorf("Error: %v", err))
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+        }
+
+        category.Description = r.Form.Get("description")
+
+        err = store.CreateCategory(&category)
+        if err != nil {
+                fmt.Println(err)
+        }
+
+        http.Redirect(w, r, "/a/", http.StatusFound)
+}
