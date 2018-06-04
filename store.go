@@ -14,6 +14,7 @@ type Store interface {
 	CreateRegion(region *Region) error
 	CreateCategory(category *Category) error
 	CreateRecipient(recipient *Recipient) error
+	CreateExpense(expense *Expense) error
 }
 
 type dbStore struct {
@@ -109,6 +110,11 @@ func (store *dbStore) CreateCategory(category *Category) error {
 
 func (store *dbStore) CreateRecipient(recipient *Recipient) error {
 	_, err := store.db.Query("INSERT INTO recipient (name) VALUES (?)", recipient.Name)
+	return err
+}
+
+func (store *dbStore) CreateExpense(expense *Expense) error {
+	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, recipient_id) VALUES (?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, expense.CategoryId, expense.RegionId, expense.RecipientId)
 	return err
 }
 
