@@ -4,16 +4,17 @@ import (
         "fmt"
         "net/http"
         "encoding/json"
-	"time"
+	"database/sql"
+	"github.com/go-sql-driver/mysql"
 )
 
 type Expense struct {
-        Description string    `json:"description"`
+        Description sql.NullString    `json:"description"`
 	Amount      float64   `json:"amount"`
-	Date        time.Time `json:"date"`
-	CategoryId  int       `json:"categoryId"`
-	RegionId    int       `json:"regionId"`
-	RecipientId int       `json:"recipientId"`
+	Date        mysql.NullTime `json:"date"`
+	CategoryId  sql.NullInt64       `json:"categoryId"`
+	RegionId    sql.NullInt64       `json:"regionId"`
+	RecipientId sql.NullInt64       `json:"recipientId"`
 }
 
 func getExpenseHandler(w http.ResponseWriter, r *http.Request) {

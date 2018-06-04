@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"github.com/gorilla/mux"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 )
-
-import _ "github.com/go-sql-driver/mysql"
 
 func newRouter() *mux.Router {
 	r := mux.NewRouter()
