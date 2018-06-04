@@ -36,7 +36,7 @@ func createDatabase() {
 	        panic(err1)
 	}
 
-	connString := configuration.User + ":" + configuration.Password + "@/" + configuration.Database
+	connString := configuration.User + ":" + configuration.Password + "@/" + configuration.Database + "?parseTime=true"
 	db, err := sql.Open("mysql", connString)
 
 	if err != nil {
@@ -51,4 +51,8 @@ func createDatabase() {
 
 	InitStore(&dbStore{db: db})
 	err = store.CreateStorage()
+
+	if err != nil {
+		panic(err)
+	}
 }

@@ -4,15 +4,16 @@ import (
         "fmt"
         "net/http"
         "encoding/json"
+	"time"
 )
 
 type Expense struct {
-        Description string  `json:"description"`
-	Amount      float64 `json:"amount"`
-	Date        string  `json:"date"`
-	CategoryId  int     `json:"categoryId"`
-	RegionId    int     `json:"regionId"`
-	RecipientId int     `json:"recipientId"`
+        Description string    `json:"description"`
+	Amount      float64   `json:"amount"`
+	Date        time.Time `json:"date"`
+	CategoryId  int       `json:"categoryId"`
+	RegionId    int       `json:"regionId"`
+	RecipientId int       `json:"recipientId"`
 }
 
 func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
