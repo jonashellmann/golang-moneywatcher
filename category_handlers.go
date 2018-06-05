@@ -11,8 +11,15 @@ type Category struct {
 }
 
 func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
-        categorys, err := store.GetCategorys()
+	userId, err := CheckCookie(r)
 
+        if err != nil {
+                fmt.Println(fmt.Errorf("Error: %v", err))
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+        }
+
+	categorys, err := store.GetCategorys(userId)
         categoryListBytes, err := json.Marshal(categorys)
 
         if err != nil {

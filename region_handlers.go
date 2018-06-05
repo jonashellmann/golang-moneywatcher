@@ -11,7 +11,15 @@ type Region struct {
 }
 
 func getRegionHandler(w http.ResponseWriter, r *http.Request) {
-	regions, err := store.GetRegions()
+        userId, err := CheckCookie(r)
+
+        if err != nil {
+                fmt.Println(fmt.Errorf("Error: %v", err))
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+        }
+
+	regions, err := store.GetRegions(userId)
 
 	regionListBytes, err := json.Marshal(regions)
 

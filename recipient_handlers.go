@@ -11,7 +11,15 @@ type Recipient struct {
 }
 
 func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
-        recipients, err := store.GetRecipients()
+        userId, err := CheckCookie(r)
+
+        if err != nil {
+                fmt.Println(fmt.Errorf("Error: %v", err))
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+        }
+
+	recipients, err := store.GetRecipients(userId)
 
         recipientListBytes, err := json.Marshal(recipients)
 

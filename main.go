@@ -24,6 +24,9 @@ func newRouter() *mux.Router {
 	r.HandleFunc("/recipient", createRecipientHandler).Methods("POST")
 	r.HandleFunc("/expense", createExpenseHandler).Methods("POST")
 
+	r.HandleFunc("/login", loginHandler).Methods("POST")
+	r.HandleFunc("/logout", logoutHandler).Methods("POST")
+
 	return r
 }
 

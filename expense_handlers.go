@@ -20,7 +20,15 @@ type Expense struct {
 }
 
 func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
-        expenses, err := store.GetExpenses()
+        userId, err := CheckCookie(r)
+
+        if err != nil {
+                fmt.Println(fmt.Errorf("Error: %v", err))
+                w.WriteHeader(http.StatusInternalServerError)
+                return
+        }
+
+	expenses, err := store.GetExpenses(userId)
 
         expenseListBytes, err := json.Marshal(expenses)
 

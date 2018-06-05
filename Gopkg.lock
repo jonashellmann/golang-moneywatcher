@@ -19,9 +19,15 @@
   revision = "e3702bed27f0d39777b0b37b664b6280e8ef8fbf"
   version = "v1.6.2"
 
+[[projects]]
+  name = "github.com/gorilla/securecookie"
+  packages = ["."]
+  revision = "e59506cc896acb7f7bf732d4fdf5e25f7ccd8983"
+  version = "v1.1.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8202d673fe16b68d8403b58af6d9c868298e260821d38ee5a6b0141f4532a93d"
+  inputs-digest = "daf6a8919fcf62568f7c1fd188977b79b694c91b5f68d9b261bad495470c7182"
   solver-name = "gps-cdcl"
   solver-version = 1
