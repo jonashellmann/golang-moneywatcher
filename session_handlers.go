@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/gorilla/securecookie"
 	"net/http"
+	"fmt"
+	"database/sql"
 )
 
 var cookieHandler = securecookie.New(
@@ -10,17 +12,25 @@ var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(32))
 
 func loginHandler(response http.ResponseWriter, request *http.Request) {
-	username := request.Form.Get("username")
-	password := request.Form.Get("password")
+	username := request.FormValue("username")
+	password := request.FormValue("password")
 
 	redirectTarget := "/a/login.html?login=false"
 	if username != "" && password != "" {
-		// TODO: Check credentials
-		loginValid := store.CheckCredentials(username, password)
-		if loginValid {
-			setSession(username, response)
-			redirectTarget = "/a/"
+		err := store.CheckCredentials(username, password)
+
+		if err == sql.ErrNoRows {
+			return
 		}
+
+		if err != nil {
+			fmt.Println(fmt.Errorf("Error: %v", err))
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		setSession(username, response)
+		redirectTarget = "/a/"
 	}
 	http.Redirect(response, request, redirectTarget, 302)
 }

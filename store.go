@@ -2,7 +2,7 @@ package main
 
 import(
 	"database/sql"
-	"crypto/sha256"
+	// "crypto/sha256"
 )
 
 type Store interface {
@@ -18,7 +18,7 @@ type Store interface {
 	CreateRecipient(recipient *Recipient) error
 	CreateExpense(expense *Expense) error
 
-	CheckCredentials(username string, password string) bool
+	CheckCredentials(username string, password string) error
 	GetUserId(username string) (int, error)
 }
 
@@ -27,11 +27,11 @@ type dbStore struct {
 }
 
 func (store *dbStore) CreateStorage() error {
-	_, err := store.db.Query("CREATE TABLE IF NOT EXISTS user (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, username VARCHAR(256) NOT NULL, email VARCHAR(256) NOT NULL, password VARCHAR(256) NOT NULL) ENGINE=InnoDB")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS region (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_region_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB;")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS category (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_category_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB;")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS recipient (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_recipient_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB;")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), user_id int(5), CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB;")
+	_, err := store.db.Query("CREATE TABLE IF NOT EXISTS user (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, username VARCHAR(256) NOT NULL, email VARCHAR(256) NOT NULL, password VARCHAR(256) NOT NULL) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS region (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_region_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS category (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_category_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS recipient (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_recipient_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), user_id int(5), CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 
 	return err
 }
@@ -124,17 +124,18 @@ func (store *dbStore) CreateExpense(expense *Expense) error {
 	return err
 }
 
-func (store *dbStore) CheckCredentials(username string, password string) bool {
-	hash := sha256.New()
-	hash.Write([]byte(password))
+func (store *dbStore) CheckCredentials(username string, password string) error {
+	// hash := sha256.New()
+	// hash.Write([]byte(password))
 	user := User{}
-	err := store.db.QueryRow("SELECT username FROM users WHERE username = ? AND password = ?", username, hash.Sum(nil)).Scan(user.Username)
+	err := store.db.QueryRow("SELECT username FROM user WHERE username = ? AND password = ?", username, password).Scan(&user.Username)
+	// err := store.db.QueryRow("SELECT username FROM user WHERE username = ? AND password = ?", username, hash.Sum(nil)).Scan(&user.Username)
 
 	if err != nil {
-		return false
+		return err
 	}
 
-	return true
+	return nil
 }
 
 func (store *dbStore) GetUserId(username string) (int, error) {
