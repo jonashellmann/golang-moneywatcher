@@ -17,6 +17,7 @@ type Expense struct {
 	CategoryId  sql.NullInt64  `json:"categoryId"`
 	RegionId    sql.NullInt64  `json:"regionId"`
 	RecipientId sql.NullInt64  `json:"recipientId"`
+	UserId      int            `json:"userId"`
 }
 
 func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
@@ -42,9 +43,17 @@ func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := CheckCookie(r)
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	expense := Expense{}
 
-        err := r.ParseForm()
+        err = r.ParseForm()
 
         if err!= nil {
                 fmt.Println(fmt.Errorf("Error: %v", err))
@@ -52,6 +61,7 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
+	expense.UserId = userId
 	expense.Description = sql.NullString{String: r.Form.Get("description"), Valid: true}
 	expense.Amount, _ = strconv.ParseFloat(r.Form.Get("amount"), 64)
 

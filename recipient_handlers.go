@@ -7,7 +7,8 @@ import (
 )
 
 type Recipient struct {
-        Name string `json:"name"`
+        Name   string `json:"name"`
+	UserId int    `json:"userId"`
 }
 
 func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,9 +34,17 @@ func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createRecipientHandler(w http.ResponseWriter, r *http.Request) {
-        recipient := Recipient{}
+	userId, err := CheckCookie(r)
 
-        err := r.ParseForm()
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	recipient := Recipient{}
+
+        err = r.ParseForm()
 
         if err!= nil {
                 fmt.Println(fmt.Errorf("Error: %v", err))
@@ -43,6 +52,7 @@ func createRecipientHandler(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
+	recipient.UserId = userId
         recipient.Name = r.Form.Get("name")
 
         err = store.CreateRecipient(&recipient)

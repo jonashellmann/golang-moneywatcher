@@ -8,6 +8,7 @@ import (
 
 type Category struct {
         Description string `json:"description"`
+	UserId      int    `json:"userId"`
 }
 
 func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,9 +33,17 @@ func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createCategoryHandler(w http.ResponseWriter, r *http.Request) {
-        category := Category{}
+	userId, err := CheckCookie(r)
 
-        err := r.ParseForm()
+	if err != nil {
+	        fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	category := Category{}
+
+        err = r.ParseForm()
 
         if err!= nil {
                 fmt.Println(fmt.Errorf("Error: %v", err))
@@ -42,6 +51,7 @@ func createCategoryHandler(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
+	category.UserId = userId
         category.Description = r.Form.Get("description")
 
         err = store.CreateCategory(&category)

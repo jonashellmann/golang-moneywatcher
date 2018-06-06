@@ -31,7 +31,7 @@ func (store *dbStore) CreateStorage() error {
 	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS region (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_region_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS category (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_category_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS recipient (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_recipient_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), user_id int(5), CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), user_id int(5) NOT NULL, CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 
 	return err
 }
@@ -105,22 +105,22 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 }
 
 func (store *dbStore) CreateRegion(region *Region) error {
-	_, err := store.db.Query("INSERT INTO region (description) VALUES (?)", region.Description)
+	_, err := store.db.Query("INSERT INTO region (description, user_id) VALUES (?, ?)", region.Description, region.UserId)
 	return err
 }
 
 func (store *dbStore) CreateCategory(category *Category) error {
-	_, err := store.db.Query("INSERT INTO category (description) VALUES (?)", category.Description)
+	_, err := store.db.Query("INSERT INTO category (description, user_id) VALUES (?, ?)", category.Description, category.UserId)
 	return err
 }
 
 func (store *dbStore) CreateRecipient(recipient *Recipient) error {
-	_, err := store.db.Query("INSERT INTO recipient (name) VALUES (?)", recipient.Name)
+	_, err := store.db.Query("INSERT INTO recipient (name, user_id) VALUES (?, ?)", recipient.Name, recipient.UserId)
 	return err
 }
 
 func (store *dbStore) CreateExpense(expense *Expense) error {
-	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, recipient_id) VALUES (?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, expense.CategoryId, expense.RegionId, expense.RecipientId)
+	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, recipient_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, expense.CategoryId, expense.RegionId, expense.RecipientId, expense.UserId)
 	return err
 }
 
