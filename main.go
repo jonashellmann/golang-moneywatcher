@@ -46,7 +46,7 @@ func createDatabase() {
 	        panic(err1)
 	}
 
-	connString := configuration.User + ":" + configuration.Password + "@/" + configuration.Database + "?parseTime=true"
+	connString := configuration.Username + ":" + configuration.Password + "@/" + configuration.Database + "?parseTime=true"
 	db, err := sql.Open("mysql", connString)
 
 	if err != nil {
