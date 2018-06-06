@@ -2,7 +2,8 @@ package main
 
 import(
 	"database/sql"
-	// "crypto/sha256"
+	"crypto/sha256"
+	"encoding/hex"
 )
 
 type Store interface {
@@ -125,11 +126,11 @@ func (store *dbStore) CreateExpense(expense *Expense) error {
 }
 
 func (store *dbStore) CheckCredentials(username string, password string) error {
-	// hash := sha256.New()
-	// hash.Write([]byte(password))
+	hash := sha256.New()
+	hash.Write([]byte(password))
+	passwordHash := hex.EncodeToString(hash.Sum(nil))
 	user := User{}
-	err := store.db.QueryRow("SELECT username FROM user WHERE username = ? AND password = ?", username, password).Scan(&user.Username)
-	// err := store.db.QueryRow("SELECT username FROM user WHERE username = ? AND password = ?", username, hash.Sum(nil)).Scan(&user.Username)
+	err := store.db.QueryRow("SELECT username FROM user WHERE username = ? AND password = ?", username, passwordHash).Scan(&user.Username)
 
 	if err != nil {
 		return err
