@@ -4,6 +4,7 @@ createExpenseButton.addEventListener('click', function(){
 	document.getElementById('add-expense-form').style.display = 'block';
 });
 
+checkLogin();
 getExpenses();
 
 function checkLogin() {
@@ -12,7 +13,7 @@ function checkLogin() {
 	})
 		.then(response => {
 			if (response.status !== 200) {
-				window.location.assign("/a/login.index.html");
+				window.location.assign("/a/login.html");
 			}
 		})
 }
