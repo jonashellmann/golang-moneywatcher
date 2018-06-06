@@ -6,6 +6,17 @@ createExpenseButton.addEventListener('click', function(){
 
 getExpenses();
 
+function checkLogin() {
+	fetch("/expense", {
+		credentials: 'include'
+	})
+		.then(response => {
+			if (response.status !== 200) {
+				window.location.assign("/a/login.index.html");
+			}
+		})
+}
+
 function getExpenses() {
 	var timeline = document.getElementById('timeline-content');
 	
