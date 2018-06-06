@@ -31,7 +31,7 @@ func loginHandler(response http.ResponseWriter, request *http.Request) {
 			setSession(username, response)
 			redirectTarget = "/a/"
 		}
-		
+
 	}
 	http.Redirect(response, request, redirectTarget, 302)
 }
@@ -54,6 +54,10 @@ func setSession(userName string, response http.ResponseWriter) {
 		}
 		http.SetCookie(response, cookie)
 	}
+}
+
+func mainHandler(response http.ResponseWriter, request *http.Request) {
+	http.Redirect(response, request, "/a/", 302)
 }
 
 func clearSession(response http.ResponseWriter) {
