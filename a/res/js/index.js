@@ -5,6 +5,10 @@ createExpenseButton.addEventListener('click', function(){
 });
 
 checkLogin();
+
+getCategorys();
+getRegions();
+getRecipients();
 getExpenses();
 
 function checkLogin() {
@@ -16,6 +20,60 @@ function checkLogin() {
 				window.location.assign("/a/login.html");
 			}
 		})
+}
+
+function getCategorys() {
+	var categorySelect = document.getElementById('category-select');
+
+	fetch("/category", {
+		credentials: 'include'
+	})
+		.then(response => response.json())
+		.then(categorys => {
+			categorys.forEach(category => {
+				var option = document.createElement('option')
+				option.innerHTML = category.description;
+				option.value = category.id;
+
+				categorySelect.appendChild(option)
+			})
+		})
+}
+
+function getRegions() {
+	var regionSelect = document.getElementById('region-select');
+
+        fetch("/region", {
+                credentials: 'include'
+        })
+                .then(response => response.json())
+                .then(regions => {
+                        regions.forEach(region => {
+                                var option = document.createElement('option')
+                                option.innerHTML = region.description;
+                                option.value = region.id;
+
+                                regionSelect.appendChild(option)
+                        })
+                })
+}
+
+function getRecipients() {
+	var recipientSelect = document.getElementById('recipient-select');
+
+        fetch("/recipient", {
+                credentials: 'include'
+        })
+                .then(response => response.json())
+                .then(recipients => {
+                        recipients.forEach(recipient => {
+                                var option = document.createElement('option')
+                                option.innerHTML = recipient.name;
+                                option.value = recipient.id;
+
+                                recipientSelect.appendChild(option)
+                        })
+                })
 }
 
 function getExpenses() {
@@ -57,6 +115,10 @@ function getExpenses() {
 				
 				description.innerHTML = expense.description.String;
 				amount.innerHTML = expense.amount;
+
+				var time = expense.date.Time;
+				date.innerHTML = time.substring(8,10);
+				month.innerHTML = time.substring(5,7);
 				
 				content.appendChild(description);
 				content.appendChild(amount);

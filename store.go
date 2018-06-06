@@ -37,7 +37,7 @@ func (store *dbStore) CreateStorage() error {
 }
 
 func (store *dbStore) GetRegions(userId int) ([]*Region, error) {
-	rows, err := store.db.Query("SELECT description FROM region WHERE user_id = ?", userId)
+	rows, err := store.db.Query("SELECT id, description FROM region WHERE user_id = ?", userId)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (store *dbStore) GetRegions(userId int) ([]*Region, error) {
 	regions := []*Region{}
 	for rows.Next() {
 		region := &Region{}
-		if err := rows.Scan(&region.Description); err != nil {
+		if err := rows.Scan(&region.Id, &region.Description); err != nil {
 			return nil, err
 		}
 		regions = append(regions, region)
@@ -54,7 +54,7 @@ func (store *dbStore) GetRegions(userId int) ([]*Region, error) {
 }
 
 func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
-        rows, err := store.db.Query("SELECT description FROM category WHERE user_id = ?", userId)
+        rows, err := store.db.Query("SELECT id, description FROM category WHERE user_id = ?", userId)
         if err != nil {
                 return nil, err
         }
@@ -62,7 +62,7 @@ func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
         categorys := []*Category{}
         for rows.Next() {
                 category := &Category{}
-                if err := rows.Scan(&category.Description); err != nil {
+                if err := rows.Scan(&category.Id, &category.Description); err != nil {
                         return nil, err
                 }
                 categorys = append(categorys, category)
@@ -71,7 +71,7 @@ func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
 }
 
 func (store *dbStore) GetRecipients(userId int) ([]*Recipient, error) {
-        rows, err := store.db.Query("SELECT name FROM recipient WHERE user_id = ?", userId)
+        rows, err := store.db.Query("SELECT id, name FROM recipient WHERE user_id = ?", userId)
         if err != nil {
                 return nil, err
         }
@@ -79,7 +79,7 @@ func (store *dbStore) GetRecipients(userId int) ([]*Recipient, error) {
         recipients := []*Recipient{}
         for rows.Next() {
                 recipient := &Recipient{}
-                if err := rows.Scan(&recipient.Name); err != nil {
+                if err := rows.Scan(&recipient.Id, &recipient.Name); err != nil {
                         return nil, err
                 }
                 recipients = append(recipients, recipient)
