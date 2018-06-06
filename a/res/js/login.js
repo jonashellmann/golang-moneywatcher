@@ -13,3 +13,8 @@ if (findGetParameter('login') === 'false') {
 	var loginFailed = document.getElementById('authentication-failed');
 	loginFailed.style.display = "block";
 }
+
+if (findGetParameter('loggedOut') === 'true') {
+	var loggedOut = document.getElementById('logged-out');
+	loggedOut.style.display = "block";
+}
