@@ -1,19 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-
+ <!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Golang Moneywatcher</title>
-  <link rel="stylesheet" type="text/css" href="res/style.css" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="language" content="DE" />
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<title>Golang Moneywatcher</title>
+	
+	<link rel="stylesheet" id="font-raleway" href="https://blog.jonas-hellmann.de/my-fonts/raleway.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="res/css/style.css">
 </head>
 
 <body>
-  <h1>Login</h1>
-  <form method="post" action="/login">
-    <input type="text" id="name" name="username">
-    <input type="password" id="password" name="password">
-    <button type="submit">Login</button>
-  </form>
+	
+	<section id="heading">
+		<img src="res/img/moneywatcher.png">
+		<h1>Golang<br />Moneywatcher</h1>
+	</section>
+	
+	<section id="login">
+		<h2>Login</h2>
+		<div>
+			<form id="login-form" action="/login" method="post">
+				<div class="input-group">
+					<label for="">Username</label>
+					<input type="text" name="username" required="true" />
+				</div>
+				
+				<div class="input-group">
+					<label for="">Password</label>
+					<input type="password" name="password" required="true" />
+				</div>
+				
+				<input type="submit" value="Login" />
+			</form>
+		</div>
+	</section>
+	
 </body>
+
+</html> 
