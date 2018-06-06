@@ -15,22 +15,23 @@ func loginHandler(response http.ResponseWriter, request *http.Request) {
 	username := request.FormValue("username")
 	password := request.FormValue("password")
 
-	redirectTarget := "/a/login.html?login=false"
+	redirectTarget := "/a/login.html"
 	if username != "" && password != "" {
 		err := store.CheckCredentials(username, password)
 
-		if err == sql.ErrNoRows {
-			return
-		}
-
-		if err != nil {
+		if err != nil && err != sql.ErrNoRows {
 			fmt.Println(fmt.Errorf("Error: %v", err))
 			response.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		setSession(username, response)
-		redirectTarget = "/a/"
+		if err == sql.ErrNoRows {
+			redirectTarget = "/a/login.html?login=false"
+		} else {
+			setSession(username, response)
+			redirectTarget = "/a/"
+		}
+		
 	}
 	http.Redirect(response, request, redirectTarget, 302)
 }
