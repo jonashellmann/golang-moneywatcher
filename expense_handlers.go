@@ -8,6 +8,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"strconv"
 	"time"
+	"strings"
 )
 
 type Expense struct {
@@ -65,10 +66,13 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
 	expense.Description = sql.NullString{String: r.Form.Get("description"), Valid: true}
 	expense.Amount, _ = strconv.ParseFloat(r.Form.Get("amount"), 64)
 
-	date, err := time.Parse(time.RFC3339, r.Form.Get("date"))
+	dateString := r.Form.Get("date")
+	dateString = strings.Replace(dateString, "-", "", -1)
+	date, err := time.Parse("20060102", dateString)
 	if err == nil {
 		expense.Date = mysql.NullTime{Time: date, Valid: true}
 	} else {
+		fmt.Println(fmt.Errorf("Error: %v", err))
 		expense.Date = mysql.NullTime{Valid: false}
 	}
 
