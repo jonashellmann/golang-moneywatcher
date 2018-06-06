@@ -4,10 +4,14 @@ createExpenseButton.addEventListener('click', function(){
 	document.getElementById('add-expense-form').style.display = 'block';
 });
 
+getExpenses();
+
 function getExpenses() {
 	var timeline = document.getElementById('timeline-content');
 	
-	fetch("/expense")
+	fetch("/expense", {
+		credentials: 'include'
+	})
 		.then(response => response.json())
 		.then(expenses => {
 			var counter = 0;
