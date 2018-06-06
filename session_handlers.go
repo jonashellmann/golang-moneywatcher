@@ -77,7 +77,9 @@ func CheckCookie(request *http.Request) (int, error) {
 			if err == nil {
 				return userId, err
 			}
+			return 0, err
 		}
+		return 0, err
 	}
 	return 0, err
 }

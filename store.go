@@ -140,7 +140,7 @@ func (store *dbStore) CheckCredentials(username string, password string) error {
 
 func (store *dbStore) GetUserId(username string) (int, error) {
 	user := User{}
-	err := store.db.QueryRow("SELECT id FROM users WHERE username = ?", username).Scan(user.Id)
+	err := store.db.QueryRow("SELECT id FROM user WHERE username = ?", username).Scan(&user.Id)
 
 	if err != nil {
 		return 0, err
