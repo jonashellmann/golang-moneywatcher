@@ -14,10 +14,10 @@ func newRouter() *mux.Router {
 	staticFileHandler := http.StripPrefix("/a/", http.FileServer(staticFileDirectory))
 	r.PathPrefix("/a/").Handler(staticFileHandler).Methods("GET")
 
-	r.HandleFunc("/region", getRegionHandler).Methods("GET")
-	r.HandleFunc("/category", getCategoryHandler).Methods("GET")
-	r.HandleFunc("/recipient", getRecipientHandler).Methods("GET")
-	r.HandleFunc("/expense", getExpenseHandler).Methods("GET")
+	r.HandleFunc("/regions", getRegionHandler).Methods("GET")
+	r.HandleFunc("/categorys", getCategoryHandler).Methods("GET")
+	r.HandleFunc("/recipients", getRecipientHandler).Methods("GET")
+	r.HandleFunc("/expenses", getExpenseHandler).Methods("GET")
 
 	r.HandleFunc("/region", createRegionHandler).Methods("POST")
 	r.HandleFunc("/category", createCategoryHandler).Methods("POST")

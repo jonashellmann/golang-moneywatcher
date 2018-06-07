@@ -12,7 +12,7 @@ getRecipients();
 getExpenses();
 
 function checkLogin() {
-	fetch("/expense", {
+	fetch("/expenses", {
 		credentials: 'include'
 	})
 		.then(response => {
@@ -25,7 +25,7 @@ function checkLogin() {
 function getCategorys() {
 	var categorySelect = document.getElementById('category-select');
 
-	fetch("/category", {
+	fetch("/categorys", {
 		credentials: 'include'
 	})
 		.then(response => response.json())
@@ -43,7 +43,7 @@ function getCategorys() {
 function getRegions() {
 	var regionSelect = document.getElementById('region-select');
 
-        fetch("/region", {
+        fetch("/regions", {
                 credentials: 'include'
         })
                 .then(response => response.json())
@@ -61,7 +61,7 @@ function getRegions() {
 function getRecipients() {
 	var recipientSelect = document.getElementById('recipient-select');
 
-        fetch("/recipient", {
+        fetch("/recipients", {
                 credentials: 'include'
         })
                 .then(response => response.json())
@@ -79,7 +79,7 @@ function getRecipients() {
 function getExpenses() {
 	var timeline = document.getElementById('timeline-content');
 	
-	fetch("/expense", {
+	fetch("/expenses", {
 		credentials: 'include'
 	})
 		.then(response => response.json())
