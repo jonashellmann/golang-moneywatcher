@@ -23,7 +23,7 @@ func getRecipientsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 	}
 
-recipients, err := store.GetRecipients(userId)
+	recipients, err := store.GetRecipients(userId)
 
 	recipientListBytes, err := json.Marshal(recipients)
 
@@ -70,7 +70,7 @@ func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(recipient)
+	w.Write(recipientBytes)
 }
 
 func createRecipientHandler(w http.ResponseWriter, r *http.Request) {

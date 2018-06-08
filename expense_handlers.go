@@ -44,7 +44,7 @@ func getExpensesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(expenseListBytes)
 }
 
-func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
+func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
 	userId, err := CheckCookie(r)
 
 	if err != nil {

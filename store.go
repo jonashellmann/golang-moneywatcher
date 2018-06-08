@@ -144,7 +144,7 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 
 func (store *dbStore) GetExpense(userId int, expenseId int64) (Expense, error) {
 	expense := Expense{}
-	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? AND id = ?", userId, categoryId).Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId)
+	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId)
 	
 	if err != nil {
 		return expense, err
