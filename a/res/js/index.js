@@ -105,6 +105,9 @@ function getExpenses() {
 					content.classList.add('content-left');
 				}
 				var description = document.createElement('p');
+				var category = document.createElement('p');
+				var recipient = document.createElement('p');
+				var region = document.createElement('p');
 				var amount = document.createElement('span');
 				var meta = document.createElement('div');
 				meta.classList.add('meta-date');
@@ -112,17 +115,47 @@ function getExpenses() {
 				date.classList.add('date');
 				var month = document.createElement('span');
 				month.classList.add('month');
+			
+				if(expense.description.Valid){
+					description.innerHTML = expense.description.String;
+				}
 				
-				description.innerHTML = expense.description.String;
-				
-				fetch("/category/" + expense.categoryId.Int64, {
-					credentials: 'include'
-				})
-					.then(response => response.json())
-					.then(category => {
-						description.innerHTML += " (" + category.description + ")"
+				category.innerHTML = "Category: ";
+				region.innerHTML = "Region: ";
+				recipient.innerHTML = "Recipient: ";
+
+				if(expense.categoryId.Valid) {
+					fetch("/category/" + expense.categoryId.Int64, {
+						credentials: 'include'
 					})
-					.catch(error => error)
+						.then(response => response.json())
+						.then(category => {
+							category.innerHTML += category.description
+						})
+						.catch(error => error)
+				}
+					
+				if(expense.regionId.Valid) {
+					fetch("/region/" + expense.regionId.Int64, {
+						credentials: 'include'
+					})
+						.then(response => response.json())
+						.then(category => {
+							category.innerHTML += category.description
+						})
+						.catch(error => error)
+				}
+					
+				if(expense.recipientId.Valid) {
+					fetch("/recipient/" + expense.recipientId.Int64, {
+						credentials: 'include'
+					})
+						.then(response => response.json())
+						.then(category => {
+							category.innerHTML += category.description
+						})
+						.catch(error => error)
+				}
 				
 				amount.innerHTML = expense.amount;
 
@@ -131,6 +164,9 @@ function getExpenses() {
 				month.innerHTML = time.substring(5,7);
 				
 				content.appendChild(description);
+				content.appendChild(category);
+				content.appendChild(region);
+				content.appendChild(recipient);
 				content.appendChild(amount);
 				container.appendChild(content);
 				timelineExpense.appendChild(container);
