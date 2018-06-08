@@ -12,7 +12,7 @@ type Recipient struct {
 	UserId int    `json:"userId"`
 }
 
-func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
+func getRecipientsHandler(w http.ResponseWriter, r *http.Request) {
         userId, err := CheckCookie(r)
 
         if err != nil {

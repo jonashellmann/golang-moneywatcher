@@ -21,7 +21,7 @@ type Expense struct {
 	UserId      int            `json:"userId"`
 }
 
-func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
+func getExpensesHandler(w http.ResponseWriter, r *http.Request) {
         userId, err := CheckCookie(r)
 
         if err != nil {

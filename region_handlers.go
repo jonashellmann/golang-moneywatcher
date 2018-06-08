@@ -12,7 +12,7 @@ type Region struct {
 	UserId      int    `json:"userId"`
 }
 
-func getRegionHandler(w http.ResponseWriter, r *http.Request) {
+func getRegionsHandler(w http.ResponseWriter, r *http.Request) {
         userId, err := CheckCookie(r)
 
         if err != nil {
