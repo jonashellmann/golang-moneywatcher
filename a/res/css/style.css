@@ -25,17 +25,19 @@ body {
 }
 
 /* Logout */
-#logout {
+#wrapper {
 	background-color: #016604;
 	color: white;
 	width: 100%;
+	display: flex;
+	justify-content: space-between;
 }
 
 #logout > form {
 	text-align: right;
 }
 
-#logout input[type="submit"] {
+#wrapper input {
 	border: none;
 	border-left: 3px solid white;
 	padding: 10px 20px;
@@ -45,6 +47,11 @@ body {
 	color: white;
 	margin: 0;
 	cursor: pointer;
+}
+
+#refresh input {
+	border-left: none;
+	border-right: 3px solid white;
 }
 
 /* Login */

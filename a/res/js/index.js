@@ -4,6 +4,10 @@ createExpenseButton.addEventListener('click', function(){
 	document.getElementById('add-expense-form').style.display = 'block';
 });
 
+document.getElementById('refresh-button').addEventListener('click', function() {
+	location.reload();	
+});
+
 checkLogin();
 
 getCategorys();
