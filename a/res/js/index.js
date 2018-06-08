@@ -162,7 +162,7 @@ function getExpenses() {
 						.catch(error => error)
 				}
 				
-				amount.innerHTML = expense.amount;
+				amount.innerHTML = expense.amount + " &euro;";
 
 				var time = expense.date.Time;
 				date.innerHTML = time.substring(8,10);
