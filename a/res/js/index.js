@@ -105,10 +105,15 @@ function getExpenses() {
 					content.classList.add('content-left');
 				}
 				var description = document.createElement('p');
+				description.classList.add('description');
 				var category = document.createElement('p');
+				category.classList.add('category');
 				var recipient = document.createElement('p');
+				recipient.classList.add('recipient');
 				var region = document.createElement('p');
+				region.classList.add('region');
 				var amount = document.createElement('span');
+				amount.classList.add('amount');
 				var meta = document.createElement('div');
 				meta.classList.add('meta-date');
 				var date = document.createElement('span');
