@@ -45,14 +45,14 @@ func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	vars := mux.Vars(r)
-	categoryId, err := strconv.ParseInt(vars["categoryId"], 10, 64)
+	categoryId, err := strconv.Atoi(vars["categoryId"])
 	
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	category, err := store.GetCategory(userId, categoryId)
 	
 	if err != nil {

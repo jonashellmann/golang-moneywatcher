@@ -46,7 +46,7 @@ func getRegionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	vars := mux.Vars(r)
-	regionId, err := strconv.ParseInt(vars["regionId"], 10, 64)
+	regionId, err := strconv.Atoi(vars["regionId"])
 	
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))

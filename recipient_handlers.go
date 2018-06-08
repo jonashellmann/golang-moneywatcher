@@ -46,7 +46,7 @@ func getRecipientHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	vars := mux.Vars(r)
-	recipientId, err := strconv.ParseInt(vars["recipientId"], 10, 64)
+	recipientId, err := strconv.Atoi(vars["recipientId"])
 	
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))

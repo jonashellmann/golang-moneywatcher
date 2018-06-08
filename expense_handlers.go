@@ -54,7 +54,7 @@ func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	vars := mux.Vars(r)
-	expenseId, err := strconv.ParseInt(vars["expenseId"], 10, 64)
+	expenseId, err := strconv.Atoi(vars["expenseId"])
 	
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))
