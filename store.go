@@ -11,6 +11,7 @@ type Store interface {
 
 	GetRegions(userId int) ([]*Region, error)
 	GetCategorys(userId int) ([]*Category, error)
+	GetCategory(userId int, categoryId int) (Category, error)
 	GetExpenses(userId int) ([]*Expense, error)
 	GetRecipients(userId int) ([]*Recipient, error)
 
@@ -55,54 +56,66 @@ func (store *dbStore) GetRegions(userId int) ([]*Region, error) {
 }
 
 func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
-        rows, err := store.db.Query("SELECT id, description FROM category WHERE user_id = ? ORDER BY description ASC, id DESC", userId)
-        if err != nil {
-                return nil, err
-        }
-        defer rows.Close()
-        categorys := []*Category{}
-        for rows.Next() {
-                category := &Category{}
-                if err := rows.Scan(&category.Id, &category.Description); err != nil {
-                        return nil, err
-                }
-                categorys = append(categorys, category)
-        }
-        return categorys, nil
+	rows, err := store.db.Query("SELECT id, description FROM category WHERE user_id = ? ORDER BY description ASC, id DESC", userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	categorys := []*Category{}
+	for rows.Next() {
+		category := &Category{}
+		if err := rows.Scan(&category.Id, &category.Description); err != nil {
+				return nil, err
+		}
+		categorys = append(categorys, category)
+	}
+	return categorys, nil
+}
+
+func (store *dbStore) GetCategory(userId int, categoryId int) (Category, error) {
+	category := Category{}
+	row, err := store.db.QueryRow("SELECT id, description FROM category WHERE user_id = ? AND category_id = ? ORDER BY description ASC, id DESC", userId, categoryId).Scan(&category.Id, &category.Description)
+	
+	if err != nil {
+		return category, err
+	}
+	
+	category, nil
+	
 }
 
 func (store *dbStore) GetRecipients(userId int) ([]*Recipient, error) {
-        rows, err := store.db.Query("SELECT id, name FROM recipient WHERE user_id = ? ORDER BY name ASC, id DESC", userId)
-        if err != nil {
-                return nil, err
-        }
-        defer rows.Close()
-        recipients := []*Recipient{}
-        for rows.Next() {
-                recipient := &Recipient{}
-                if err := rows.Scan(&recipient.Id, &recipient.Name); err != nil {
-                        return nil, err
-                }
-                recipients = append(recipients, recipient)
-        }
-        return recipients, nil
+	rows, err := store.db.Query("SELECT id, name FROM recipient WHERE user_id = ? ORDER BY name ASC, id DESC", userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	recipients := []*Recipient{}
+	for rows.Next() {
+		recipient := &Recipient{}
+		if err := rows.Scan(&recipient.Id, &recipient.Name); err != nil {
+				return nil, err
+		}
+		recipients = append(recipients, recipient)
+	}
+	return recipients, nil
 }
 
 func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
-        rows, err := store.db.Query("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
-        if err != nil {
-                return nil, err
-        }
-        defer rows.Close()
-        expenses := []*Expense{}
-        for rows.Next() {
-                expense := &Expense{}
-                if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId); err != nil {
-                        return nil, err
-                }
-                expenses = append(expenses, expense)
-        }
-        return expenses, nil
+	rows, err := store.db.Query("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	expenses := []*Expense{}
+	for rows.Next() {
+		expense := &Expense{}
+		if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId); err != nil {
+				return nil, err
+		}
+		expenses = append(expenses, expense)
+	}
+	return expenses, nil
 }
 
 func (store *dbStore) CreateRegion(region *Region) error {

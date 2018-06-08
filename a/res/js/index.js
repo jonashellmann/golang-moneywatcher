@@ -114,6 +114,16 @@ function getExpenses() {
 				month.classList.add('month');
 				
 				description.innerHTML = expense.description.String;
+				
+				fetch("/category/" + expense.categoryId.Int64, {
+					credentials: 'include'
+				})
+					.then(response => response.json())
+					.then(category => {
+						description.innerHTML += category.description
+					})
+					.error(error => error)
+				
 				amount.innerHTML = expense.amount;
 
 				var time = expense.date.Time;
