@@ -11,7 +11,7 @@ type Store interface {
 
 	GetRegions(userId int) ([]*Region, error)
 	GetCategorys(userId int) ([]*Category, error)
-	GetCategory(userId int, categoryId int) (Category, error)
+	GetCategory(userId int, categoryId int64) (Category, error)
 	GetExpenses(userId int) ([]*Expense, error)
 	GetRecipients(userId int) ([]*Recipient, error)
 
@@ -72,15 +72,15 @@ func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
 	return categorys, nil
 }
 
-func (store *dbStore) GetCategory(userId int, categoryId int) (Category, error) {
+func (store *dbStore) GetCategory(userId int, categoryId int64) (Category, error) {
 	category := Category{}
-	row, err := store.db.QueryRow("SELECT id, description FROM category WHERE user_id = ? AND category_id = ? ORDER BY description ASC, id DESC", userId, categoryId).Scan(&category.Id, &category.Description)
+	err := store.db.QueryRow("SELECT id, description FROM category WHERE user_id = ? AND id = ?", userId, categoryId).Scan(&category.Id, &category.Description)
 	
 	if err != nil {
 		return category, err
 	}
 	
-	category, nil
+	return category, nil
 	
 }
 

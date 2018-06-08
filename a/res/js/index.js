@@ -120,9 +120,9 @@ function getExpenses() {
 				})
 					.then(response => response.json())
 					.then(category => {
-						description.innerHTML += category.description
+						description.innerHTML += " (" + category.description + ")"
 					})
-					.error(error => error)
+					.catch(error => error)
 				
 				amount.innerHTML = expense.amount;
 

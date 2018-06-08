@@ -45,7 +45,7 @@ func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	vars := mux.Vars(r)
-	categoryId, err := strconv.ParseInt(vars["categoryId"])
+	categoryId, err := strconv.ParseInt(vars["categoryId"], 10, 64)
 	
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))
