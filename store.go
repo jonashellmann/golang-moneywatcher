@@ -134,9 +134,35 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 	expenses := []*Expense{}
 	for rows.Next() {
 		expense := &Expense{}
-		if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId); err != nil {
+		regionId := sql.NullInt64{}
+		categoryId := sql.NullInt64{}
+		recipientId := sql.NullInt64{}
+		if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &recipientId); err != nil {
 				return nil, err
 		}
+
+		if categoryId.Valid {
+			category, err := store.GetCategory(userId, int(categoryId.Int64))
+			if err != nil {
+				return expenses, err
+			}
+			expense.Category = category
+		}
+		if regionId.Valid {
+                        region, err := store.GetRegion(userId, int(regionId.Int64))
+                        if err != nil {
+                                return expenses, err
+                        }
+                        expense.Region = region
+                }
+		if recipientId.Valid {
+                        recipient, err := store.GetRecipient(userId, int(recipientId.Int64))
+                        if err != nil {
+                                return expenses, err
+                        }
+                        expense.Recipient = recipient
+                }
+
 		expenses = append(expenses, expense)
 	}
 	return expenses, nil
@@ -144,12 +170,39 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 
 func (store *dbStore) GetExpense(userId int, expenseId int) (Expense, error) {
 	expense := Expense{}
-	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId)
-	
+	regionId := sql.NullInt64{}
+        categoryId := sql.NullInt64{}
+        recipientId := sql.NullInt64{}
+
+	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, recipientId)
+
+	if categoryId.Valid {
+		category, err := store.GetCategory(userId, int(categoryId.Int64))
+                if err != nil {
+			return expense, err
+                }
+                expense.Category = category
+        }
+        if regionId.Valid {
+                region, err := store.GetRegion(userId, int(regionId.Int64))
+                if err != nil {
+                        return expense, err
+                }
+                expense.Region = region
+        }
+        if recipientId.Valid {
+                recipient, err := store.GetRecipient(userId, int(recipientId.Int64))
+                if err != nil {
+                        return expense, err
+                }
+                expense.Recipient = recipient
+        }
+
+
 	if err != nil {
 		return expense, err
 	}
-	
+
 	return expense, nil
 }
 
@@ -169,7 +222,27 @@ func (store *dbStore) CreateRecipient(recipient *Recipient) error {
 }
 
 func (store *dbStore) CreateExpense(expense *Expense) error {
-	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, recipient_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, expense.CategoryId, expense.RegionId, expense.RecipientId, expense.UserId)
+	var categoryId sql.NullInt64
+	var regionId sql.NullInt64
+	var recipientId sql.NullInt64
+	
+	if expense.Category.Id == 0 {
+		categoryId = sql.NullInt64{Valid: false}
+	} else {
+		categoryId = sql.NullInt64{Int64: int64(expense.Category.Id), Valid: true}
+	}
+	if expense.Recipient.Id == 0 {
+                recipientId = sql.NullInt64{Valid: false}
+        } else {
+                recipientId = sql.NullInt64{Int64: int64(expense.Recipient.Id), Valid: true}
+        }
+	if expense.Region.Id == 0 {
+                regionId = sql.NullInt64{Valid: false}
+        } else {
+                regionId = sql.NullInt64{Int64: int64(expense.Region.Id), Valid: true}
+        }
+	
+	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, recipient_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, categoryId, regionId, recipientId, expense.UserId)
 	return err
 }
 

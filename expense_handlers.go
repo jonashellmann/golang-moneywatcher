@@ -16,9 +16,9 @@ type Expense struct {
         Description sql.NullString `json:"description"`
 	Amount      float64        `json:"amount"`
 	Date        mysql.NullTime `json:"date"`
-	CategoryId  sql.NullInt64  `json:"categoryId"`
-	RegionId    sql.NullInt64  `json:"regionId"`
-	RecipientId sql.NullInt64  `json:"recipientId"`
+	Category    Category       `json:"category"`
+	Region      Region         `json:"region"`
+	Recipient   Recipient      `json:"recipient"`
 	UserId      int            `json:"userId"`
 }
 
@@ -32,6 +32,12 @@ func getExpensesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	expenses, err := store.GetExpenses(userId)
+
+if err != nil {
+                        fmt.Println(fmt.Errorf("Error: %v", err))
+                        w.WriteHeader(http.StatusInternalServerError)
+                        return
+        }	
 
 	expenseListBytes, err := json.Marshal(expenses)
 
@@ -114,25 +120,25 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
 		expense.Date = mysql.NullTime{Valid: false}
 	}
 
-	regionId, err := strconv.ParseInt(r.Form.Get("region"), 10, 64)
+	regionId, err := strconv.Atoi(r.Form.Get("region"))
 	if err == nil {
-		expense.RegionId = sql.NullInt64{Int64: regionId, Valid: true}
+		expense.Region.Id = regionId
 	} else {
-		expense.RegionId = sql.NullInt64{Valid: false}
+		expense.Region.Id = 0
 	}
 
-	recipientId, err := strconv.ParseInt(r.Form.Get("recipient"), 10, 64)
+	recipientId, err := strconv.Atoi(r.Form.Get("recipient"))
         if err == nil {
-		expense.RecipientId = sql.NullInt64{Int64: recipientId, Valid: true}
+		expense.Recipient.Id = recipientId
 	} else {
-		expense.RecipientId = sql.NullInt64{Valid: false}
+		expense.Recipient.Id = 0
 	}
 
-	categoryId, err := strconv.ParseInt(r.Form.Get("category"), 10, 64)
+	categoryId, err := strconv.Atoi(r.Form.Get("category"))
         if err == nil {
-		expense.CategoryId = sql.NullInt64{Int64: categoryId, Valid: true}
+		expense.Category.Id = categoryId
 	} else {
-		expense.CategoryId = sql.NullInt64{Valid: false}
+		expense.Category.Id = 0
 	}
 
 	err = store.CreateExpense(&expense)

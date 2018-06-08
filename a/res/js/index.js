@@ -125,43 +125,10 @@ function getExpenses() {
 					description.innerHTML = expense.description.String;
 				}
 				
-				category.innerHTML = "Category: ";
-				region.innerHTML = "Region: ";
-				recipient.innerHTML = "Recipient: ";
+				category.innerHTML = "Category: " + expense.category.description;
+				region.innerHTML = "Region: " + expense.region.description;
+				recipient.innerHTML = "Recipient: " + expense.recipient.name;
 
-				if(expense.categoryId.Valid) {
-					fetch("/category/" + expense.categoryId.Int64, {
-						credentials: 'include'
-					})
-						.then(response => response.json())
-						.then(category => {
-							category.innerHTML += category.description
-						})
-						.catch(error => error)
-				}
-					
-				if(expense.regionId.Valid) {
-					fetch("/region/" + expense.regionId.Int64, {
-						credentials: 'include'
-					})
-						.then(response => response.json())
-						.then(category => {
-							category.innerHTML += category.description
-						})
-						.catch(error => error)
-				}
-					
-				if(expense.recipientId.Valid) {
-					fetch("/recipient/" + expense.recipientId.Int64, {
-						credentials: 'include'
-					})
-						.then(response => response.json())
-						.then(category => {
-							category.innerHTML += category.description
-						})
-						.catch(error => error)
-				}
-				
 				amount.innerHTML = expense.amount + " &euro;";
 
 				var time = expense.date.Time;
