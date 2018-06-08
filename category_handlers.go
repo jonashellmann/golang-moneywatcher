@@ -11,7 +11,7 @@ import (
 type Category struct {
 	Id          int    `json:"id"`
 	Description string `json:"description"`
-	UserId      int    `json:"userId"`
+	UserId      int    `json:"-"`
 }
 
 func getCategorysHandler(w http.ResponseWriter, r *http.Request) {

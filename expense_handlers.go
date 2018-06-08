@@ -19,7 +19,7 @@ type Expense struct {
 	Category    Category       `json:"category"`
 	Region      Region         `json:"region"`
 	Recipient   Recipient      `json:"recipient"`
-	UserId      int            `json:"userId"`
+	UserId      int            `json:"-"`
 }
 
 func getExpensesHandler(w http.ResponseWriter, r *http.Request) {

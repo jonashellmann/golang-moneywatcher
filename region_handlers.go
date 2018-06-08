@@ -11,7 +11,7 @@ import (
 type Region struct {
 	Id          int    `json:"id"`
 	Description string `json:"description"`
-	UserId      int    `json:"userId"`
+	UserId      int    `json:"-"`
 }
 
 func getRegionsHandler(w http.ResponseWriter, r *http.Request) {

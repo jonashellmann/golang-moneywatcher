@@ -11,7 +11,7 @@ import (
 type Recipient struct {
 	Id     int    `json:"id"`
 	Name   string `json:"name"`
-	UserId int    `json:"userId"`
+	UserId int    `json:"-"`
 }
 
 func getRecipientsHandler(w http.ResponseWriter, r *http.Request) {
