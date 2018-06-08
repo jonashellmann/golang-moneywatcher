@@ -15,9 +15,11 @@ func newRouter() *mux.Router {
 	r.PathPrefix("/a/").Handler(staticFileHandler).Methods("GET")
 
 	r.HandleFunc("/regions", getRegionsHandler).Methods("GET")
+	r.HandleFunc("/region/{regionId}", getRegionHandler).Methods("GET")
 	r.HandleFunc("/categorys", getCategorysHandler).Methods("GET")
 	r.HandleFunc("/category/{categoryId}", getCategoryHandler).Methods("GET")
 	r.HandleFunc("/recipients", getRecipientsHandler).Methods("GET")
+	r.HandleFunc("/recipient/{recipientId}", getRecipientHandler).Methods("GET")
 	r.HandleFunc("/expenses", getExpensesHandler).Methods("GET")
 
 	r.HandleFunc("/region", createRegionHandler).Methods("POST")

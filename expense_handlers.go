@@ -22,25 +22,62 @@ type Expense struct {
 }
 
 func getExpensesHandler(w http.ResponseWriter, r *http.Request) {
-        userId, err := CheckCookie(r)
+	userId, err := CheckCookie(r)
 
-        if err != nil {
-                fmt.Println(fmt.Errorf("Error: %v", err))
-                w.WriteHeader(http.StatusInternalServerError)
-                return
-        }
+	if err != nil {
+			fmt.Println(fmt.Errorf("Error: %v", err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+	}
 
 	expenses, err := store.GetExpenses(userId)
 
-        expenseListBytes, err := json.Marshal(expenses)
+	expenseListBytes, err := json.Marshal(expenses)
 
-        if err != nil {
-                fmt.Println(fmt.Errorf("Error: %v", err))
-                w.WriteHeader(http.StatusInternalServerError)
-                return
-        }
+	if err != nil {
+			fmt.Println(fmt.Errorf("Error: %v", err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+	}
 
-        w.Write(expenseListBytes)
+	w.Write(expenseListBytes)
+}
+
+func getCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := CheckCookie(r)
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	vars := mux.Vars(r)
+	expenseId, err := strconv.ParseInt(vars["expenseId"], 10, 64)
+	
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	expense, err := store.GetExpense(userId, expenseId)
+	
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	expenseBytes, err := json.Marshal(expense)
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(expenseBytes)
 }
 
 func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,13 +91,13 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
 
 	expense := Expense{}
 
-        err = r.ParseForm()
+	err = r.ParseForm()
 
-        if err!= nil {
-                fmt.Println(fmt.Errorf("Error: %v", err))
-                w.WriteHeader(http.StatusInternalServerError)
-                return
-        }
+	if err!= nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	expense.UserId = userId
 	expense.Description = sql.NullString{String: r.Form.Get("description"), Valid: true}
@@ -97,10 +134,10 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
 		expense.CategoryId = sql.NullInt64{Valid: false}
 	}
 
-        err = store.CreateExpense(&expense)
-        if err != nil {
-                fmt.Println(err)
-        }
+	err = store.CreateExpense(&expense)
+	if err != nil {
+			fmt.Println(err)
+	}
 
-        http.Redirect(w, r, "/a/", http.StatusFound)
+	http.Redirect(w, r, "/a/", http.StatusFound)
 }

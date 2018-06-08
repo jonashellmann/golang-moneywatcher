@@ -13,13 +13,13 @@ type Region struct {
 }
 
 func getRegionsHandler(w http.ResponseWriter, r *http.Request) {
-        userId, err := CheckCookie(r)
+	userId, err := CheckCookie(r)
 
-        if err != nil {
-                fmt.Println(fmt.Errorf("Error: %v", err))
-                w.WriteHeader(http.StatusInternalServerError)
-                return
-        }
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	regions, err := store.GetRegions(userId)
 
@@ -32,6 +32,43 @@ func getRegionsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(regionListBytes)
+}
+
+func getRegionHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := CheckCookie(r)
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	vars := mux.Vars(r)
+	regionId, err := strconv.ParseInt(vars["regionId"], 10, 64)
+	
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	region, err := store.GetRegion(userId, regionId)
+	
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	
+	regionBytes, err := json.Marshal(region)
+
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(regionBytes)
 }
 
 func createRegionHandler(w http.ResponseWriter, r *http.Request) {

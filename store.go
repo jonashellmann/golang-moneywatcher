@@ -10,10 +10,13 @@ type Store interface {
 	CreateStorage() error
 
 	GetRegions(userId int) ([]*Region, error)
+	GetRegion(userId int, regionId int64) (Region, error)
 	GetCategorys(userId int) ([]*Category, error)
 	GetCategory(userId int, categoryId int64) (Category, error)
 	GetExpenses(userId int) ([]*Expense, error)
+	GetExpense(userId int, expenseId int64) (Expense, error)
 	GetRecipients(userId int) ([]*Recipient, error)
+	GetRecipient(userId int, recipientId int64) (Recipient, error)
 
 	CreateRegion(region *Region) error
 	CreateCategory(category *Category) error
@@ -55,6 +58,17 @@ func (store *dbStore) GetRegions(userId int) ([]*Region, error) {
 	return regions, nil
 }
 
+func (store *dbStore) GetRegion(userId int, regionId int64) (Region, error) {
+	region := Region{}
+	err := store.db.QueryRow("SELECT id, description FROM region WHERE user_id = ? AND id = ?", userId, regionId).Scan(&region.Id, &region.Description)
+	
+	if err != nil {
+		return region, err
+	}
+	
+	return region, nil
+}
+
 func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
 	rows, err := store.db.Query("SELECT id, description FROM category WHERE user_id = ? ORDER BY description ASC, id DESC", userId)
 	if err != nil {
@@ -81,7 +95,6 @@ func (store *dbStore) GetCategory(userId int, categoryId int64) (Category, error
 	}
 	
 	return category, nil
-	
 }
 
 func (store *dbStore) GetRecipients(userId int) ([]*Recipient, error) {
@@ -101,6 +114,17 @@ func (store *dbStore) GetRecipients(userId int) ([]*Recipient, error) {
 	return recipients, nil
 }
 
+func (store *dbStore) GetRecipient(userId int, recipientId int64) (Recipient, error) {
+	recipient := Recipient{}
+	err := store.db.QueryRow("SELECT id, name FROM recipient WHERE user_id = ? AND id = ?", userId, recipientId).Scan(&recipient.Id, &recipient.Name)
+	
+	if err != nil {
+		return recipient, err
+	}
+	
+	return recipient, nil
+}
+
 func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 	rows, err := store.db.Query("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
 	if err != nil {
@@ -116,6 +140,17 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 		expenses = append(expenses, expense)
 	}
 	return expenses, nil
+}
+
+func (store *dbStore) GetExpense(userId int, expenseId int64) (Expense, error) {
+	expense := Expense{}
+	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? AND id = ?", userId, categoryId).Scan(&expense.Description, &expense.Amount, &expense.Date, &expense.CategoryId, &expense.RegionId, &expense.RecipientId)
+	
+	if err != nil {
+		return expense, err
+	}
+	
+	return expense, nil
 }
 
 func (store *dbStore) CreateRegion(region *Region) error {
