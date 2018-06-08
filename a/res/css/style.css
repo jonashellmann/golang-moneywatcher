@@ -382,13 +382,13 @@ body {
 	.timeline-expense .content-left .recipient {
 		grid-column: 1 / span 1;
 	}
-	.timeline-expense .content-right span {
-		border-left: none;
-		border-right: 3px solid #016604;
-		margin-left: 0;
-		padding-left: 0;
-		margin-right: 10px;
-		padding-right: 10px;
+	.timeline-expense .content-left span {
+		border-right: none;
+		border-left: 3px solid #016604;
+		margin-right: 0;
+		padding-right: 0;
+		margin-left: 10px;
+		padding-left: 10px;
 	}
 }
 @media only screen and (max-width: 400px) {
