@@ -18,7 +18,8 @@ type Expense struct {
 	Date        mysql.NullTime `json:"date"`
 	Category    Category       `json:"category"`
 	Region      Region         `json:"region"`
-	Recipient   Recipient      `json:"recipient"`
+	Source      Recipient      `json:"source"`
+	Destination Recipient      `json:"destination"`
 	UserId      int            `json:"-"`
 }
 
@@ -127,11 +128,18 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
 		expense.Region.Id = 0
 	}
 
-	recipientId, err := strconv.Atoi(r.Form.Get("recipient"))
+	sourceId, err := strconv.Atoi(r.Form.Get("source"))
         if err == nil {
-		expense.Recipient.Id = recipientId
+                expense.Source.Id = sourceId
+        } else {
+                expense.Source.Id = 0
+        }
+
+	destinationId, err := strconv.Atoi(r.Form.Get("destination"))
+        if err == nil {
+		expense.Destination.Id = destinationId
 	} else {
-		expense.Recipient.Id = 0
+		expense.Destination.Id = 0
 	}
 
 	categoryId, err := strconv.Atoi(r.Form.Get("category"))

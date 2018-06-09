@@ -63,7 +63,8 @@ function getRegions() {
 }
 
 function getRecipients() {
-	var recipientSelect = document.getElementById('recipient-select');
+	var sourceSelect = document.getElementById('source-select');
+	var destinationSelect = document.getElementById('destination-select');
 
         fetch("/recipients", {
                 credentials: 'include'
@@ -74,8 +75,11 @@ function getRecipients() {
                                 var option = document.createElement('option')
                                 option.innerHTML = recipient.name;
                                 option.value = recipient.id;
-
-                                recipientSelect.appendChild(option)
+                                var option2 = document.createElement('option')
+                                                            option2.innerHTML = recipient.name;
+                                                            option2.value = recipient.id;
+                                sourceSelect.appendChild(option);
+				destinationSelect.appendChild(option2);
                         })
                 })
 }
@@ -112,8 +116,10 @@ function getExpenses() {
 				description.classList.add('description');
 				var category = document.createElement('p');
 				category.classList.add('category');
-				var recipient = document.createElement('p');
-				recipient.classList.add('recipient');
+				var source = document.createElement('p');
+				source.classList.add('source');
+				var destination = document.createElement('p');
+				destination.classList.add('destination');
 				var region = document.createElement('p');
 				region.classList.add('region');
 				var amount = document.createElement('span');
@@ -131,7 +137,8 @@ function getExpenses() {
 				
 				category.innerHTML = "Category: " + expense.category.description;
 				region.innerHTML = "Region: " + expense.region.description;
-				recipient.innerHTML = "Recipient: " + expense.recipient.name;
+				source.innerHTML = "Source: " + expense.source.name;
+				destination.innerHTML = "Destination: " + expense.destination.name
 
 				amount.innerHTML = expense.amount + " &euro;";
 
@@ -142,7 +149,8 @@ function getExpenses() {
 				content.appendChild(description);
 				content.appendChild(category);
 				content.appendChild(region);
-				content.appendChild(recipient);
+				content.appendChild(source);
+				content.appendChild(destination);
 				content.appendChild(amount);
 				container.appendChild(content);
 				timelineExpense.appendChild(container);

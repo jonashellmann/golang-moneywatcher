@@ -36,7 +36,7 @@ func (store *dbStore) CreateStorage() error {
 	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS region (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_region_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS category (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_category_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS recipient (id int(5) PRIMARY KEY NOT NULL AUTO_INCREMENT, name VARCHAR(256) NOT NULL, user_id int(5) NOT NULL, CONSTRAINT `fk_recipient_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
-	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), recipient_id int(5), user_id int(5) NOT NULL, CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_recipient` FOREIGN KEY (recipient_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
+	_, err = store.db.Query("CREATE TABLE IF NOT EXISTS expense (id int(9) PRIMARY KEY NOT NULL AUTO_INCREMENT, description VARCHAR(256), amount DECIMAL(10,2) NOT NULL, date DATE, category_id int(5), region_id int(5), source_id int(5), destination_id int(5), user_id int(5) NOT NULL, CONSTRAINT `fk_expense_region` FOREIGN KEY (region_id) REFERENCES region(id), CONSTRAINT `fk_expense_category` FOREIGN KEY (category_id) REFERENCES category(id), CONSTRAINT `fk_expense_source` FOREIGN KEY (source_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_destination` FOREIGN KEY (destination_id) REFERENCES recipient(id), CONSTRAINT `fk_expense_user` FOREIGN KEY (user_id) REFERENCES user(id)) ENGINE=InnoDB CHARACTER SET 'utf8' COLLATE 'utf8_bin';")
 
 	return err
 }
@@ -89,11 +89,11 @@ func (store *dbStore) GetCategorys(userId int) ([]*Category, error) {
 func (store *dbStore) GetCategory(userId int, categoryId int) (Category, error) {
 	category := Category{}
 	err := store.db.QueryRow("SELECT id, description FROM category WHERE user_id = ? AND id = ?", userId, categoryId).Scan(&category.Id, &category.Description)
-	
+
 	if err != nil {
 		return category, err
 	}
-	
+
 	return category, nil
 }
 
@@ -117,16 +117,16 @@ func (store *dbStore) GetRecipients(userId int) ([]*Recipient, error) {
 func (store *dbStore) GetRecipient(userId int, recipientId int) (Recipient, error) {
 	recipient := Recipient{}
 	err := store.db.QueryRow("SELECT id, name FROM recipient WHERE user_id = ? AND id = ?", userId, recipientId).Scan(&recipient.Id, &recipient.Name)
-	
+
 	if err != nil {
 		return recipient, err
 	}
-	
+
 	return recipient, nil
 }
 
 func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
-	rows, err := store.db.Query("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
+	rows, err := store.db.Query("SELECT description, amount, date, category_id, region_id, source_id, destination_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
 	if err != nil {
 		return nil, err
 	}
@@ -136,8 +136,9 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 		expense := &Expense{}
 		regionId := sql.NullInt64{}
 		categoryId := sql.NullInt64{}
-		recipientId := sql.NullInt64{}
-		if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &recipientId); err != nil {
+		sourceId := sql.NullInt64{}
+		destinationId := sql.NullInt64{}
+		if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &sourceId, &destinationId); err != nil {
 				return nil, err
 		}
 
@@ -155,12 +156,19 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
                         }
                         expense.Region = region
                 }
-		if recipientId.Valid {
-                        recipient, err := store.GetRecipient(userId, int(recipientId.Int64))
+		if sourceId.Valid {
+                        source, err := store.GetRecipient(userId, int(sourceId.Int64))
                         if err != nil {
                                 return expenses, err
                         }
-                        expense.Recipient = recipient
+                        expense.Source = source
+                }
+		if destinationId.Valid {
+                        destination, err := store.GetRecipient(userId, int(destinationId.Int64))
+                        if err != nil {
+                                return expenses, err
+                        }
+                        expense.Destination = destination
                 }
 
 		expenses = append(expenses, expense)
@@ -172,9 +180,10 @@ func (store *dbStore) GetExpense(userId int, expenseId int) (Expense, error) {
 	expense := Expense{}
 	regionId := sql.NullInt64{}
         categoryId := sql.NullInt64{}
-        recipientId := sql.NullInt64{}
+	sourceId := sql.NullInt64{}
+        destinationId := sql.NullInt64{}
 
-	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, recipient_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, recipientId)
+	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, source_id, destination_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &sourceId, &destinationId)
 
 	if categoryId.Valid {
 		category, err := store.GetCategory(userId, int(categoryId.Int64))
@@ -190,14 +199,20 @@ func (store *dbStore) GetExpense(userId int, expenseId int) (Expense, error) {
                 }
                 expense.Region = region
         }
-        if recipientId.Valid {
-                recipient, err := store.GetRecipient(userId, int(recipientId.Int64))
+	if sourceId.Valid {
+		source, err := store.GetRecipient(userId, int(sourceId.Int64))
                 if err != nil {
                         return expense, err
                 }
-                expense.Recipient = recipient
+                expense.Source = source
         }
-
+        if destinationId.Valid {
+                destination, err := store.GetRecipient(userId, int(destinationId.Int64))
+                if err != nil {
+                        return expense, err
+                }
+                expense.Destination = destination
+        }
 
 	if err != nil {
 		return expense, err
@@ -224,25 +239,31 @@ func (store *dbStore) CreateRecipient(recipient *Recipient) error {
 func (store *dbStore) CreateExpense(expense *Expense) error {
 	var categoryId sql.NullInt64
 	var regionId sql.NullInt64
-	var recipientId sql.NullInt64
+	var sourceId sql.NullInt64
+	var destinationId sql.NullInt64
 	
 	if expense.Category.Id == 0 {
 		categoryId = sql.NullInt64{Valid: false}
 	} else {
 		categoryId = sql.NullInt64{Int64: int64(expense.Category.Id), Valid: true}
 	}
-	if expense.Recipient.Id == 0 {
-                recipientId = sql.NullInt64{Valid: false}
+	if expense.Source.Id == 0 {
+                sourceId = sql.NullInt64{Valid: false}
         } else {
-                recipientId = sql.NullInt64{Int64: int64(expense.Recipient.Id), Valid: true}
+                sourceId = sql.NullInt64{Int64: int64(expense.Source.Id), Valid: true}
         }
+	if expense.Destination.Id == 0 {
+		destinationId = sql.NullInt64{Valid: false}
+	} else {
+		destinationId = sql.NullInt64{Int64: int64(expense.Destination.Id), Valid: true}
+	}
 	if expense.Region.Id == 0 {
                 regionId = sql.NullInt64{Valid: false}
         } else {
                 regionId = sql.NullInt64{Int64: int64(expense.Region.Id), Valid: true}
         }
 	
-	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, recipient_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, categoryId, regionId, recipientId, expense.UserId)
+	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, source_id, destination_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, categoryId, regionId, sourceId, destinationId, expense.UserId)
 	return err
 }
 
