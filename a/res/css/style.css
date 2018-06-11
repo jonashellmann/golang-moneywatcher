@@ -416,7 +416,8 @@ body {
 	.timeline-expense .content-left .destination {
 		grid-column: 1 / span 1;
 	}
-	.timeline-expense .content-left span {
+	.timeline-expense .content-left .amount,
+  .timeline-expense .content-left .delete {
 		border-right: none;
 		border-left: 3px solid #016604;
 		margin-right: 0;
