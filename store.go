@@ -23,6 +23,8 @@ type Store interface {
 	CreateRecipient(recipient *Recipient) error
 	CreateExpense(expense *Expense) error
 
+	DeleteExpense(userId int, expenseId int) error
+
 	CheckCredentials(username string, password string) error
 	GetUserId(username string) (int, error)
 }
@@ -61,11 +63,11 @@ func (store *dbStore) GetRegions(userId int) ([]*Region, error) {
 func (store *dbStore) GetRegion(userId int, regionId int) (Region, error) {
 	region := Region{}
 	err := store.db.QueryRow("SELECT id, description FROM region WHERE user_id = ? AND id = ?", userId, regionId).Scan(&region.Id, &region.Description)
-	
+
 	if err != nil {
 		return region, err
 	}
-	
+
 	return region, nil
 }
 
@@ -126,7 +128,7 @@ func (store *dbStore) GetRecipient(userId int, recipientId int) (Recipient, erro
 }
 
 func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
-	rows, err := store.db.Query("SELECT description, amount, date, category_id, region_id, source_id, destination_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
+	rows, err := store.db.Query("SELECT id, description, amount, date, category_id, region_id, source_id, destination_id FROM expense WHERE user_id = ? ORDER BY date DESC, id DESC", userId)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +140,7 @@ func (store *dbStore) GetExpenses(userId int) ([]*Expense, error) {
 		categoryId := sql.NullInt64{}
 		sourceId := sql.NullInt64{}
 		destinationId := sql.NullInt64{}
-		if err := rows.Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &sourceId, &destinationId); err != nil {
+		if err := rows.Scan(&expense.Id, &expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &sourceId, &destinationId); err != nil {
 				return nil, err
 		}
 
@@ -183,7 +185,7 @@ func (store *dbStore) GetExpense(userId int, expenseId int) (Expense, error) {
 	sourceId := sql.NullInt64{}
         destinationId := sql.NullInt64{}
 
-	err := store.db.QueryRow("SELECT description, amount, date, category_id, region_id, source_id, destination_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &sourceId, &destinationId)
+	err := store.db.QueryRow("SELECT id, description, amount, date, category_id, region_id, source_id, destination_id FROM expense WHERE user_id = ? AND id = ?", userId, expenseId).Scan(&expense.Id, &expense.Description, &expense.Amount, &expense.Date, &categoryId, &regionId, &sourceId, &destinationId)
 
 	if categoryId.Valid {
 		category, err := store.GetCategory(userId, int(categoryId.Int64))
@@ -241,7 +243,7 @@ func (store *dbStore) CreateExpense(expense *Expense) error {
 	var regionId sql.NullInt64
 	var sourceId sql.NullInt64
 	var destinationId sql.NullInt64
-	
+
 	if expense.Category.Id == 0 {
 		categoryId = sql.NullInt64{Valid: false}
 	} else {
@@ -262,9 +264,19 @@ func (store *dbStore) CreateExpense(expense *Expense) error {
         } else {
                 regionId = sql.NullInt64{Int64: int64(expense.Region.Id), Valid: true}
         }
-	
+
 	_, err := store.db.Query("INSERT INTO expense (description, amount, date, category_id, region_id, source_id, destination_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", expense.Description, expense.Amount, expense.Date, categoryId, regionId, sourceId, destinationId, expense.UserId)
 	return err
+}
+
+func (store *dbStore) DeleteExpense(userId int, expenseId int) error {
+	_, err := store.db.Query("DELETE FROM expense WHERE id = ? AND user_id = ?", expenseId, userId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (store *dbStore) CheckCredentials(username string, password string) error {

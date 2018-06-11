@@ -248,18 +248,22 @@ body {
 	padding: 0;
 	margin: 5px;
 }
-.timeline-expense .content-left span,
-.timeline-expense .content-right span {
+.timeline-expense .content-left .amount,
+.timeline-expense .content-left .delete,
+.timeline-expense .content-right .amount,
+.timeline-expense .content-right .delete {
 	padding: 0;
 	font-size: 25px;
 	color: #016604;
 }
-.timeline-expense .content-left span {
+.timeline-expense .content-left .amount,
+.timeline-expense .content-left .delete {
 	border-right: 3px solid #016604;
 	margin-right: 10px;
 	padding-right: 10px;
 }
-.timeline-expense .content-right span {
+.timeline-expense .content-right .amount,
+.timeline-expense .content-right .delete {
 	border-left: 3px solid #016604;
 	margin-left: 10px;
 	padding-left: 10px;
@@ -267,6 +271,10 @@ body {
 .timeline-expense .content-left .amount {
 	grid-column: 1 / span 1;
 	grid-row: 1 / span 4;
+}
+.timeline-expense .content-left .delete {
+	grid-column: 1 / span 1;
+	grid-row: 5 / span 1;
 }
 .timeline-expense .content-left .description {
 	grid-column: 2 / span 1;
@@ -291,6 +299,10 @@ body {
 .timeline-expense .content-right .amount {
 	grid-column: 2 / span 1;
 	grid-row: 1 / span 4;
+}
+.timeline-expense .content-right .delete {
+        grid-column: 2 / span 1;
+        grid-row: 5 / span 1;
 }
 .timeline-expense .content-right .description {
 	grid-column: 1 / span 1;
@@ -317,6 +329,17 @@ body {
 .destination,
 .category {
 	font-size: 10px;
+}
+.deleteButton {
+	padding: 5px 10px;
+	font-size: 16px;
+	font-weight: normal;
+	background-color: #016604;
+	color: white;
+	margin: 0;
+	cursor: pointer;
+	border: none;
+	width: 100%;
 }
 .timeline-expense .content-left-container {
 	float: left;
@@ -382,21 +405,14 @@ body {
 	.timeline-expense .content-left {
 		grid-template-columns: 60% 40%;
 	}
-	.timeline-expense .content-left .amount {
+	.timeline-expense .content-left .amount,
+	.timeline-expense .content-left .delete {
 		grid-column: 2 / span 1;
 	}
-	.timeline-expense .content-left .description {
-		grid-column: 1 / span 1;
-	}
-	.timeline-expense .content-left .category {
-		grid-column: 1 / span 1;
-	}
-	.timeline-expense .content-left .region {
-		grid-column: 1 / span 1;
-	}
-	.timeline-expense .content-left .source {
-		grid-column: 1 / span 1;
-	}
+	.timeline-expense .content-left .description,
+	.timeline-expense .content-left .category,
+	.timeline-expense .content-left .region,
+	.timeline-expense .content-left .source,
 	.timeline-expense .content-left .destination {
 		grid-column: 1 / span 1;
 	}

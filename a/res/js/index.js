@@ -145,13 +145,24 @@ function getExpenses() {
 				var time = expense.date.Time;
 				date.innerHTML = time.substring(8,10);
 				month.innerHTML = time.substring(5,7);
-				
+			
+				var deleteForm = document.createElement("form");
+				deleteForm.action = "/expense/delete/" + expense.id;
+				deleteForm.method = "post";
+				var deleteButton = document.createElement("input");
+				deleteButton.type = "submit";
+				deleteButton.value = "X";
+				deleteForm.classList.add('delete');
+				deleteButton.classList.add('deleteButton');
+
+				deleteForm.appendChild(deleteButton);
 				content.appendChild(description);
 				content.appendChild(category);
 				content.appendChild(region);
 				content.appendChild(source);
 				content.appendChild(destination);
 				content.appendChild(amount);
+				content.appendChild(deleteForm);
 				container.appendChild(content);
 				timelineExpense.appendChild(container);
 				meta.appendChild(date);

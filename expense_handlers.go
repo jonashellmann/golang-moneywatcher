@@ -13,7 +13,8 @@ import (
 )
 
 type Expense struct {
-        Description sql.NullString `json:"description"`
+	Id          int            `json:"id"`
+	Description sql.NullString `json:"description"`
 	Amount      float64        `json:"amount"`
 	Date        mysql.NullTime `json:"date"`
 	Category    Category       `json:"category"`
@@ -38,7 +39,7 @@ if err != nil {
                         fmt.Println(fmt.Errorf("Error: %v", err))
                         w.WriteHeader(http.StatusInternalServerError)
                         return
-        }	
+        }
 
 	expenseListBytes, err := json.Marshal(expenses)
 
@@ -59,24 +60,24 @@ func getExpenseHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	vars := mux.Vars(r)
 	expenseId, err := strconv.Atoi(vars["expenseId"])
-	
+
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	expense, err := store.GetExpense(userId, expenseId)
-	
+
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	expenseBytes, err := json.Marshal(expense)
 
 	if err != nil {
@@ -152,6 +153,25 @@ func createExpenseHandler(w http.ResponseWriter, r *http.Request) {
 	err = store.CreateExpense(&expense)
 	if err != nil {
 			fmt.Println(err)
+	}
+
+	http.Redirect(w, r, "/a/", http.StatusFound)
+}
+
+func deleteExpenseHandler(w http.ResponseWriter, r *http.Request) {
+	userId, err := CheckCookie(r)
+	if err != nil {
+		fmt.Println(fmt.Errorf("Error: %v", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	vars := mux.Vars(r)
+	expenseId, err := strconv.Atoi(vars["expenseId"])
+
+	err = store.DeleteExpense(userId, expenseId)
+	if err != nil {
+		fmt.Println(err)
 	}
 
 	http.Redirect(w, r, "/a/", http.StatusFound)
